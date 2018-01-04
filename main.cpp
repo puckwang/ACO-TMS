@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "AntColony.h"
 #define numMax 99999
 using namespace std;
 
@@ -42,19 +43,23 @@ int main(int argc, char *argv[]) {
     ifstream inputFile(argv[1]);
     ofstream outputFile("output.txt");
 
-    int pCount, tCount, eCount;         // 處理器、工作、有向邊
+    int pCount; // 處理器數量
+    int tCount; // 任務數量
+    int eCount; // 有向邊數量
 
     runNotData(inputFile);
     inputFile >> pCount >> tCount >> eCount;
 
-    double commRate[pCount][pCount], compCost[tCount][pCount], transDataVol[tCount][tCount];  // 處理器傳送的時間
+    double commRate[pCount][pCount]; // 處理器間的傳送單位成本
+    double compCost[tCount][pCount]; // 處理器執行各任務的時間
+    double transDataVol[tCount][tCount];  // 處理器間傳送的資料單位量
 
-    // init
+    // 初始化資料
     init2DArray(*commRate, pCount, pCount);
     init2DArray(*compCost, tCount, pCount);
     init2DArray(*transDataVol, tCount, tCount);
 
-    // import
+    // 匯入資料
     importData(inputFile, *commRate, pCount, pCount);
     importData(inputFile, *compCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
