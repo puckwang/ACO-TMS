@@ -9,22 +9,33 @@ class Ant {
 public:
     Ant();
 
-    void init(int taskCount, int processCount);
-
-private:
-    int *taskSchedule, taskScheduleIndex = 0; // 排程陣列
-    int *processMatch, processMatchIndex = 0; // 匹配陣列
-    int *canRunTask; // 當前可執行的task
-    int taskCount, processCount;
-
-public:
-    int *getCanRunTask() const;
+    void init(int taskCount, int processCount, double *transDataVol);
 
     void selectTask(int taskId);
 
     void selectProcess(int processId);
 
     void clear();
+
+    int getCurrentProcess();
+
+    int getCurrentTask();
+
+    bool canRunTask(int taskID);
+
+    void printTaskSchedule();
+
+    void printProcessMatch();
+
+    void printDoneTask();
+
+private:
+    int *taskSchedule, taskScheduleIndex = -1; // 排程陣列
+    int *processMatch, processMatchIndex = -1; // 匹配陣列
+    int *doneTask;
+    int taskCount, processCount;
+    int currentTask = 0, currentProcess = 0;
+    double *transDataVol;
 };
 
 #endif //ANT_TMS_ANT_H
