@@ -24,7 +24,6 @@ void Ant::clear() {
         processMatch[i] = 0;
     }
 
-    processMatchIndex = -1;
     taskScheduleIndex = -1;
 }
 
@@ -34,8 +33,8 @@ void Ant::selectTask(int taskId) {
     doneTask[taskId] = 1;
 }
 
-void Ant::selectProcess(int processId) {
-    processMatch[++processMatchIndex] = processId;
+void Ant::selectProcess(int taskId, int processId) {
+    processMatch[taskId] = processId;
     currentProcess = processId;
 }
 

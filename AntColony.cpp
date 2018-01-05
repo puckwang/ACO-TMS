@@ -58,14 +58,16 @@ void AntColony::moveAnts() {
 }
 
 void AntColony::moveAnt(Ant &ant) {
+    int selectedTask;
     ant.clear();
     for (int i = 0; i < this->taskCount; ++i) {
         if (i == 0) {
-            ant.selectTask(0);
+            selectedTask = 0;
         } else {
-            ant.selectTask(getRandTask(ant));
+            selectedTask = getRandTask(ant);
         }
-        ant.selectProcess(getRandProcess(ant));
+        ant.selectTask(selectedTask);
+        ant.selectProcess(selectedTask, getRandProcess(ant));
     }
 }
 

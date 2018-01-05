@@ -13,7 +13,7 @@ public:
 
     void selectTask(int taskId);
 
-    void selectProcess(int processId);
+    void selectProcess(int taskId, int processId);
 
     void clear();
 
@@ -31,7 +31,7 @@ public:
 
 private:
     int *taskSchedule, taskScheduleIndex = -1; // 排程陣列
-    int *processMatch, processMatchIndex = -1; // 匹配陣列
+    int *processMatch; // 匹配陣列
     int *doneTask;
     int taskCount, processCount;
     int currentTask = 0, currentProcess = 0;

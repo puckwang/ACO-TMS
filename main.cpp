@@ -64,15 +64,9 @@ int main(int argc, char *argv[]) {
     importData(inputFile, *compCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
-    for (int i = 0; i < tCount; ++i) {
-        for (int j = 0; j < tCount; ++j) {
-            cout << transDataVol[j][i] << " ";
-        }
-        cout << endl;
-    }
-//    AntColony antColony(tCount, pCount, 1, *transDataVol);
+    AntColony antColony(tCount, pCount, 1, *transDataVol);
 
-//    antColony.run(1);
+    antColony.run(1);
 
     inputFile.close();
     outputFile.close();
