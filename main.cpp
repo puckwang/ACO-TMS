@@ -64,10 +64,10 @@ int main(int argc, char *argv[]) {
     importData(inputFile, *runCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
-    AntColony antColony(tCount, pCount, 10, *transDataVol, *transDataRate, *runCost);
+    AntColony antColony(tCount, pCount, 50, *transDataVol, *transDataRate, *runCost);
 
-    antColony.run(1);
-
+    antColony.run(300);
+    antColony.printPheromones();
     inputFile.close();
     outputFile.close();
     return 0;
