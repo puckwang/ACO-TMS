@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include "Ant.h"
-#define numMax 99999
+#define numMax -1
 
 Ant::Ant() = default;
 
@@ -82,4 +82,20 @@ void Ant::printDoneTask() {
         std::cout << doneTask[i] << " ";
     }
     std::cout << std::endl;
+}
+
+int *Ant::getTaskSchedule() {
+    return taskSchedule;
+}
+
+int *Ant::getProcessMatch() {
+    return processMatch;
+}
+
+double Ant::getFinalTime() {
+    return finalTime;
+}
+
+void Ant::setFinalTime(double finalTime) {
+    this->finalTime = finalTime;
 }

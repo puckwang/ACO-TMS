@@ -6,6 +6,8 @@
 #define ANT_TMS_ANTCOLONY_H
 
 #include "Ant.h"
+#include "Evaluator.h"
+
 #define initPheromones 0.9 // 初始費洛蒙
 #define alpha 2 // 費洛蒙影響力控制系數
 #define beta 2 // 初始費洛蒙影響力控制系數
@@ -14,7 +16,8 @@ class AntColony {
 private:
     int taskCount, processCount, antCount;
     double *map; // map[taskCount][processCount]
-    double *transDataVol;
+    double *transDataVol, *transDataRate, *runCost;
+    Evaluator evaluator;
     Ant *ants;
 
     void initMap();
@@ -43,11 +46,12 @@ private:
 
     double getRandom(double max);
 
+    void evaluateAnt(Ant &ant);
+
 public:
-    AntColony(int taskCount, int processCount, int antCount, double *transDataVol);
+    AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost);
 
     void run(int iteration);
-
 };
 
 #endif //ANT_TMS_ANTCOLONY_H

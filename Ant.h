@@ -29,6 +29,13 @@ public:
 
     void printDoneTask();
 
+    int *getTaskSchedule();
+
+    int *getProcessMatch();
+
+    double getFinalTime();
+
+    void setFinalTime(double finalTime);
 private:
     int *taskSchedule, taskScheduleIndex = -1; // 排程陣列
     int *processMatch; // 匹配陣列
@@ -36,6 +43,7 @@ private:
     int taskCount, processCount;
     int currentTask = 0, currentProcess = 0;
     double *transDataVol;
+    double finalTime;
 };
 
 #endif //ANT_TMS_ANT_H

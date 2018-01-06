@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "AntColony.h"
-#define numMax 99999
+#define numMax -1
 using namespace std;
 
 void init2DArray(double *array, int x, int y) {
@@ -50,21 +50,21 @@ int main(int argc, char *argv[]) {
     runNotData(inputFile);
     inputFile >> pCount >> tCount >> eCount;
 
-    double commRate[pCount][pCount]; // 處理器間的傳送單位成本
-    double compCost[tCount][pCount]; // 處理器執行各任務的時間
+    double transDataRate[pCount][pCount]; // 處理器間的傳送單位成本
+    double runCost[tCount][pCount]; // 處理器執行各任務的時間
     double transDataVol[tCount][tCount];  // 處理器間傳送的資料單位量
 
     // 初始化資料
-    init2DArray(*commRate, pCount, pCount);
-    init2DArray(*compCost, tCount, pCount);
+    init2DArray(*transDataRate, pCount, pCount);
+    init2DArray(*runCost, tCount, pCount);
     init2DArray(*transDataVol, tCount, tCount);
 
     // 匯入資料
-    importData(inputFile, *commRate, pCount, pCount);
-    importData(inputFile, *compCost, tCount, pCount);
+    importData(inputFile, *transDataRate, pCount, pCount);
+    importData(inputFile, *runCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
-    AntColony antColony(tCount, pCount, 1, *transDataVol);
+    AntColony antColony(tCount, pCount, 10, *transDataVol, *transDataRate, *runCost);
 
     antColony.run(1);
 

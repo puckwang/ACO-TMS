@@ -8,11 +8,17 @@
 #include <iostream>
 #include "AntColony.h"
 
-AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol) {
+AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost) {
     this->taskCount = taskCount;
     this->processCount = processCount;
     this->antCount = antCount;
     this->transDataVol = transDataVol;
+    this->transDataRate = transDataRate;
+    this->runCost = runCost;
+    evaluator.setCount(processCount, taskCount);
+    evaluator.setTransDataVol(transDataVol);
+    evaluator.setTransDataRate(transDataRate);
+    evaluator.setRunCost(runCost);
     initMap();
 }
 
@@ -50,10 +56,10 @@ void AntColony::run(int iteration) {
 void AntColony::moveAnts() {
     for (int i = 0; i < this->antCount; ++i) {
         moveAnt(ants[i]);
-        std::cout << "Ant #" << i << std::endl;
+        evaluateAnt(ants[i]);
+        std::cout << "Ant #" << i << " FT:" << ants[i].getFinalTime() << std::endl;
         ants[i].printTaskSchedule();
         ants[i].printProcessMatch();
-        ants[i].printDoneTask();
     }
 }
 
@@ -87,7 +93,7 @@ int AntColony::getRandProcess(Ant &ant) {
     double processProbability[processCount], processProbabilitySum = 0.0;
 
     for (int i = 0; i < processCount; ++i) {
-        processProbability[i] = calculateProbability(getPheromones(i, ant.getCurrentProcess()));
+        processProbability[i] = calculateProbability(getPheromones(ant.getCurrentTask(), i));
         processProbabilitySum += processProbability[i];
     }
 
@@ -140,5 +146,10 @@ double AntColony::getRandom(double fmax) {
     std::uniform_real_distribution<double> dis(0.0, fmax);
 
     return dis(gen);
+}
+
+void AntColony::evaluateAnt(Ant &ant) {
+    evaluator.setSsMs(ant.getTaskSchedule(), ant.getProcessMatch());
+    ant.setFinalTime(evaluator.getCost());
 }
 
