@@ -10,7 +10,7 @@
 
 #define initPheromones 0.8 // 初始費洛蒙 0.9
 #define evaporatePheromonesCoefficient 0.8 // 費洛蒙蒸發係數 0~1
-#define handDownPheromonesCoefficient 1 // 費洛蒙遺留係數 0~1
+#define handDownPheromonesCoefficient 5 // 費洛蒙遺留係數 0~1
 #define MaximumPheromones 1
 #define MinimumPheromones 0.0001
 #define alpha 1 // 費洛蒙影響力控制系數 1

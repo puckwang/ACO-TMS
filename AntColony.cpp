@@ -57,11 +57,11 @@ void AntColony::run(int iteration) {
 
 void AntColony::moveAnts() {
     std::thread *t1, *t2, *t3, *t4, *t5;
-    t1 = new std::thread(&AntColony::moveAntsThread, this, 0, 10);
-    t2 = new std::thread(&AntColony::moveAntsThread, this, 10, 20);
-    t3 = new std::thread(&AntColony::moveAntsThread, this, 20, 30);
-    t4 = new std::thread(&AntColony::moveAntsThread, this, 30, 40);
-    t5 = new std::thread(&AntColony::moveAntsThread, this, 40, 50);
+    t1 = new std::thread(&AntColony::moveAntsThread, this, 0, antCount/5);
+    t2 = new std::thread(&AntColony::moveAntsThread, this, antCount/5, antCount/5 * 2);
+    t3 = new std::thread(&AntColony::moveAntsThread, this, antCount/5 * 2, antCount/5 * 3);
+    t4 = new std::thread(&AntColony::moveAntsThread, this, antCount/5 * 3, antCount/5 * 4);
+    t5 = new std::thread(&AntColony::moveAntsThread, this, antCount/5 * 4, antCount);
 
     t1->join();
     t2->join();
