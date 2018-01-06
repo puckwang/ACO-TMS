@@ -25,6 +25,7 @@ void Ant::clear() {
     }
 
     taskScheduleIndex = -1;
+    finalTime = 999999;
 }
 
 void Ant::selectTask(int taskId) {

@@ -39,12 +39,19 @@ void import2DData(ifstream &in, double *array, int x, int y) {
     }
 }
 
-double get_cpu_time(){
-    return (double)clock() / CLOCKS_PER_SEC;
+double diff(struct timespec start, struct timespec end) {
+    struct timespec temp;
+    if ((end.tv_nsec-start.tv_nsec)<0) {
+        temp.tv_sec = end.tv_sec-start.tv_sec-1;
+        temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+    } else {
+        temp.tv_sec = end.tv_sec-start.tv_sec;
+        temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+    }
+    return temp.tv_sec + (double) temp.tv_nsec / 1000000000.0;;
 }
 
 int main(int argc, char *argv[]) {
-    double cpuStartTime, cpuFinalTime;
     ifstream inputFile(argv[1]);
     ofstream outputFile("output.txt");
 
@@ -69,15 +76,18 @@ int main(int argc, char *argv[]) {
     importData(inputFile, *runCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
-    cpuStartTime = get_cpu_time();
-    AntColony antColony(tCount, pCount, 40, *transDataVol, *transDataRate, *runCost);
-    antColony.run(300);
-    cpuFinalTime = get_cpu_time();
+    struct timespec start, end;
+
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    AntColony antColony(tCount, pCount, 50, *transDataVol, *transDataRate, *runCost);
+    antColony.run(200);
+    clock_gettime(CLOCK_MONOTONIC, &end);
 
     antColony.printScheduleAndMatch();
     antColony.printStartAndFinalTime();
     antColony.printBestFinalTime();
-    cout << "Run time: " << cpuFinalTime - cpuStartTime << endl;
+
+    cout << "Run time: " << diff(start, end) << endl;
     inputFile.close();
     outputFile.close();
     return 0;

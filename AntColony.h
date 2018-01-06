@@ -8,11 +8,11 @@
 #include "Ant.h"
 #include "Evaluator.h"
 
-#define initPheromones 0.5 // 初始費洛蒙 0.9
+#define initPheromones 0.8 // 初始費洛蒙 0.9
 #define evaporatePheromonesCoefficient 0.8 // 費洛蒙蒸發係數 0~1
 #define handDownPheromonesCoefficient 1 // 費洛蒙遺留係數 0~1
 #define MaximumPheromones 1
-#define MinimumPheromones 0.001
+#define MinimumPheromones 0.0001
 #define alpha 1 // 費洛蒙影響力控制系數 1
 
 class AntColony {
@@ -71,6 +71,7 @@ private:
      */
     void updateAntPheromones(Ant &ant);
 
+    void moveAntsThread(int start, int end);
 
 public:
     AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost);

@@ -7,6 +7,7 @@
 #include <random>
 #include <iostream>
 #include "AntColony.h"
+#include <thread>
 
 AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost) {
     this->taskCount = taskCount;
@@ -48,7 +49,6 @@ void AntColony::intAnt() {
 
 void AntColony::run(int iteration) {
     for (int i = 0; i < iteration; i++) {
-//        std::cout << "# " <<  i << std::endl;
         intAnt();
         moveAnts();
         updatePheromones();
@@ -56,16 +56,31 @@ void AntColony::run(int iteration) {
 }
 
 void AntColony::moveAnts() {
-    bool bestChanged = false;
+    std::thread *t1, *t2, *t3, *t4, *t5;
+    t1 = new std::thread(&AntColony::moveAntsThread, this, 0, 10);
+    t2 = new std::thread(&AntColony::moveAntsThread, this, 10, 20);
+    t3 = new std::thread(&AntColony::moveAntsThread, this, 20, 30);
+    t4 = new std::thread(&AntColony::moveAntsThread, this, 30, 40);
+    t5 = new std::thread(&AntColony::moveAntsThread, this, 40, 50);
+
+    t1->join();
+    t2->join();
+    t3->join();
+    t4->join();
+    t5->join();
+
     for (int i = 0; i < this->antCount; ++i) {
-        moveAnt(ants[i]);
         evaluateAnt(ants[i]);
         if (bestFinalTime > ants[i].getFinalTime()) {
             saveBestData(ants[i]);
-            bestChanged = true;
         }
     }
-//    std::cout << "Best Final Time: " << bestFinalTime << std::endl;
+}
+
+void AntColony::moveAntsThread(int start, int end) {
+    for (int i = start; i < end; ++i) {
+        moveAnt(ants[i]);
+    }
 }
 
 void AntColony::moveAnt(Ant &ant) {
