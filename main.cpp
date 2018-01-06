@@ -39,7 +39,12 @@ void import2DData(ifstream &in, double *array, int x, int y) {
     }
 }
 
+double get_cpu_time(){
+    return (double)clock() / CLOCKS_PER_SEC;
+}
+
 int main(int argc, char *argv[]) {
+    double cpuStartTime, cpuFinalTime;
     ifstream inputFile(argv[1]);
     ofstream outputFile("output.txt");
 
@@ -64,10 +69,15 @@ int main(int argc, char *argv[]) {
     importData(inputFile, *runCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
-    AntColony antColony(tCount, pCount, 50, *transDataVol, *transDataRate, *runCost);
-
+    cpuStartTime = get_cpu_time();
+    AntColony antColony(tCount, pCount, 40, *transDataVol, *transDataRate, *runCost);
     antColony.run(300);
-    antColony.printPheromones();
+    cpuFinalTime = get_cpu_time();
+
+    antColony.printScheduleAndMatch();
+    antColony.printStartAndFinalTime();
+    antColony.printBestFinalTime();
+    cout << "Run time: " << cpuFinalTime - cpuStartTime << endl;
     inputFile.close();
     outputFile.close();
     return 0;

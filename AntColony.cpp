@@ -48,21 +48,11 @@ void AntColony::intAnt() {
 
 void AntColony::run(int iteration) {
     for (int i = 0; i < iteration; i++) {
-        std::cout << "# " <<  i << std::endl;
+//        std::cout << "# " <<  i << std::endl;
         intAnt();
         moveAnts();
         updatePheromones();
     }
-    std::cout << "TaskSchedule: " << std::endl;
-    for (int j = 0; j < taskCount; ++j) {
-        std::cout << *(this->bestTaskSchedule + j) << " ";
-    }
-    std::cout << std::endl;
-    std::cout << "ProcessMatch: " << std::endl;
-    for (int j = 0; j < taskCount; ++j) {
-        std::cout << *(this->bestProcessMatch + j) << " ";
-    }
-    std::cout << std::endl;
 }
 
 void AntColony::moveAnts() {
@@ -75,7 +65,7 @@ void AntColony::moveAnts() {
             bestChanged = true;
         }
     }
-    std::cout << "Best Final Time: " << bestFinalTime << std::endl;
+//    std::cout << "Best Final Time: " << bestFinalTime << std::endl;
 }
 
 void AntColony::moveAnt(Ant &ant) {
@@ -246,5 +236,32 @@ void AntColony::checkProcessMapPheromones(int processID, int taskID) {
     if (*(processMap + processID * taskCount + taskID) > MaximumPheromones) {
         *(processMap + processID * taskCount + taskID) = MaximumPheromones;
     }
+}
+
+void AntColony::printScheduleAndMatch() {
+    std::cout << "TaskSchedule: " << std::endl;
+    for (int j = 0; j < taskCount; ++j) {
+        std::cout << *(this->bestTaskSchedule + j) << " ";
+    }
+    std::cout << std::endl;
+    std::cout << "ProcessMatch: " << std::endl;
+    for (int j = 0; j < taskCount; ++j) {
+        std::cout << *(this->bestProcessMatch + j) << " ";
+    }
+    std::cout << std::endl;
+}
+
+void AntColony::printStartAndFinalTime() {
+    evaluator.setSsMs(this->bestTaskSchedule, this->bestProcessMatch);
+    evaluator.getCost();
+    std::cout << "Start Time: " << std::endl;
+    evaluator.printSt();
+    std::cout << "Final Time: " << std::endl;
+    evaluator.printFt();
+}
+
+void AntColony::printBestFinalTime() {
+    std::cout << "Best Final Time: " << getBestFinalTime() << std::endl;
+
 }
 

@@ -79,6 +79,12 @@ public:
 
     void printPheromones();
 
+    void printScheduleAndMatch();
+
+    void printStartAndFinalTime();
+
+    void printBestFinalTime();
+
     double getBestFinalTime();
 };
 
