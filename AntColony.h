@@ -19,6 +19,11 @@
 class AntColony {
 private:
     int taskCount, processCount, antCount, *bestTaskSchedule, *bestProcessMatch;
+    int threadCount;
+public:
+    void setThreadCount(int threadCount);
+
+private:
     double bestFinalTime = 999999999;
     double *taskMap, *processMap; // taskMap[taskCount][processCount]
     double *transDataVol, *transDataRate, *runCost;

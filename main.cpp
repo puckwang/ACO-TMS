@@ -79,7 +79,8 @@ int main(int argc, char *argv[]) {
     struct timespec start, end;
 
     clock_gettime(CLOCK_MONOTONIC, &start);
-    AntColony antColony(tCount, pCount, tCount + pCount * 2, *transDataVol, *transDataRate, *runCost);
+    AntColony antColony(tCount, pCount, 40, *transDataVol, *transDataRate, *runCost);
+    antColony.setThreadCount(4);
     antColony.run(200);
     clock_gettime(CLOCK_MONOTONIC, &end);
 

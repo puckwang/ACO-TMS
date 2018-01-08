@@ -57,18 +57,14 @@ void AntColony::run(int iteration) {
 }
 
 void AntColony::moveAnts() {
-    std::thread *t1, *t2, *t3, *t4, *t5;
-    t1 = new std::thread(&AntColony::moveAntsThread, this, 0, antCount / 5);
-    t2 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5, antCount / 5 * 2);
-    t3 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5 * 2, antCount / 5 * 3);
-    t4 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5 * 3, antCount / 5 * 4);
-    t5 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5 * 4, antCount);
+    std::thread *thread[threadCount];
+    for (int j = 0; j < threadCount; ++j) {
+        thread[j] = new std::thread(&AntColony::moveAntsThread, this, antCount / threadCount * j, antCount / threadCount * (j + 1));
+    }
 
-    t1->join();
-    t2->join();
-    t3->join();
-    t4->join();
-    t5->join();
+    for (int k = 0; k < threadCount; ++k) {
+        thread[k]->join();
+    }
 
     for (int i = 0; i < this->antCount; ++i) {
         evaluateAnt(ants[i]);
@@ -298,5 +294,9 @@ void AntColony::printBestFinalTime() {
 
 double AntColony::getDeltaPheromones(Ant &ant) {
     return handDownPheromonesCoefficient / ant.getFinalTime();
+}
+
+void AntColony::setThreadCount(int threadCount) {
+    AntColony::threadCount = threadCount;
 }
 
