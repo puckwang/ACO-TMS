@@ -9,11 +9,12 @@
 #include "Evaluator.h"
 
 #define initPheromones 0.8 // 初始費洛蒙 0.9
-#define evaporatePheromonesCoefficient 0.8 // 費洛蒙蒸發係數 0~1
+#define evaporatePheromonesCoefficient 0.75 // 費洛蒙蒸發係數 0~1
 #define handDownPheromonesCoefficient 5 // 費洛蒙遺留係數 0~1
 #define MaximumPheromones 1
 #define MinimumPheromones 0.0001
 #define alpha 1 // 費洛蒙影響力控制系數 1
+#define beta 2 // 可視度影響力控制系數 1
 
 class AntColony {
 private:
@@ -40,7 +41,7 @@ private:
 
     int getRandTask(Ant &ant);
 
-    double calculateProbability(double pheromones);
+    double calculateProbability(int taskID, int processID, Ant &ant, bool selectTask);
 
     double getTaskMapPheromones(int taskID, int processID);
 
@@ -72,6 +73,8 @@ private:
     void updateAntPheromones(Ant &ant);
 
     void moveAntsThread(int start, int end);
+
+    double getDeltaPheromones(Ant &ant);
 
 public:
     AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost);

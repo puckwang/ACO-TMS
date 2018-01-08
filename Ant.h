@@ -8,7 +8,6 @@
 class Ant {
 public:
     Ant();
-
     void init(int taskCount, int processCount, double *transDataVol);
 
     void selectTask(int taskId);
@@ -20,6 +19,8 @@ public:
     int getCurrentProcess();
 
     int getCurrentTask();
+
+    int getPreviousTask();
 
     bool canRunTask(int taskID);
 
@@ -42,7 +43,7 @@ private:
     int *processMatch; // 匹配陣列
     int *doneTask;
     int taskCount, processCount;
-    int currentTask = 0, currentProcess = 0;
+    int currentTask = 0, currentProcess = -1;
     double *transDataVol;
     double finalTime;
 };

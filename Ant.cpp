@@ -25,6 +25,8 @@ void Ant::clear() {
     }
 
     taskScheduleIndex = -1;
+    currentProcess = -1;
+    currentTask = -1;
     finalTime = 999999;
 }
 
@@ -99,4 +101,8 @@ double Ant::getFinalTime() {
 
 void Ant::setFinalTime(double finalTime) {
     this->finalTime = finalTime;
+}
+
+int Ant::getPreviousTask() {
+    return taskScheduleIndex > 0 ? taskSchedule[taskScheduleIndex-1] : -1;
 }

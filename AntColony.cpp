@@ -9,7 +9,8 @@
 #include "AntColony.h"
 #include <thread>
 
-AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost) {
+AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate,
+                     double *runCost) {
     this->taskCount = taskCount;
     this->processCount = processCount;
     this->antCount = antCount;
@@ -57,11 +58,11 @@ void AntColony::run(int iteration) {
 
 void AntColony::moveAnts() {
     std::thread *t1, *t2, *t3, *t4, *t5;
-    t1 = new std::thread(&AntColony::moveAntsThread, this, 0, antCount/5);
-    t2 = new std::thread(&AntColony::moveAntsThread, this, antCount/5, antCount/5 * 2);
-    t3 = new std::thread(&AntColony::moveAntsThread, this, antCount/5 * 2, antCount/5 * 3);
-    t4 = new std::thread(&AntColony::moveAntsThread, this, antCount/5 * 3, antCount/5 * 4);
-    t5 = new std::thread(&AntColony::moveAntsThread, this, antCount/5 * 4, antCount);
+    t1 = new std::thread(&AntColony::moveAntsThread, this, 0, antCount / 5);
+    t2 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5, antCount / 5 * 2);
+    t3 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5 * 2, antCount / 5 * 3);
+    t4 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5 * 3, antCount / 5 * 4);
+    t5 = new std::thread(&AntColony::moveAntsThread, this, antCount / 5 * 4, antCount);
 
     t1->join();
     t2->join();
@@ -105,7 +106,7 @@ void AntColony::updatePheromones() {
 }
 
 void AntColony::updateAntPheromones(Ant &ant) {
-    double deltaPheromones = handDownPheromonesCoefficient / ant.getFinalTime();
+    double deltaPheromones = getDeltaPheromones(ant);
     for (int i = 0; i < taskCount; ++i) {
         int taskID = *(ant.getTaskSchedule() + i), processID = *(ant.getProcessMatch() + i);
         if (i != 0) {
@@ -132,7 +133,7 @@ int AntColony::getRandProcess(Ant &ant) {
     double processProbability[processCount], processProbabilitySum = 0.0;
 
     for (int i = 0; i < processCount; ++i) {
-        processProbability[i] = calculateProbability(getProcessMapPheromones(i, ant.getCurrentTask()));
+        processProbability[i] = calculateProbability(ant.getCurrentTask(), i, ant, false);
         processProbabilitySum += processProbability[i];
     }
 
@@ -156,7 +157,7 @@ int AntColony::getRandTask(Ant &ant) {
             taskProbability[i] = 0.0;
             continue;
         }
-        taskProbability[i] = calculateProbability(getTaskMapPheromones(i, ant.getCurrentProcess()));
+        taskProbability[i] = calculateProbability(i, ant.getCurrentProcess(), ant, true);
         taskProbabilitySum += taskProbability[i];
     }
     double targetPoint = getRandom(taskProbabilitySum);
@@ -171,8 +172,23 @@ int AntColony::getRandTask(Ant &ant) {
     return 0;
 }
 
-double AntColony::calculateProbability(double pheromones) {
-    return pow(pheromones, alpha);
+double AntColony::calculateProbability(int taskID, int processID, Ant &ant, bool selectTask) {
+
+    if (selectTask) {
+        return pow(getTaskMapPheromones(taskID, processID), alpha);
+    }
+
+    if (ant.getCurrentProcess() != -1 && ant.getCurrentProcess() != processID) {
+        if (*(transDataVol + ant.getPreviousTask() * taskCount + taskID) != -1 &&
+                *(transDataVol + ant.getPreviousTask() * taskCount + taskID) != 0) {
+
+            return pow(getProcessMapPheromones(processID, taskID), alpha) -
+                   pow(1 / (*(transDataVol + ant.getPreviousTask() * taskCount + taskID) *
+                       *(transDataRate + ant.getCurrentProcess() * processCount + processID)), beta);
+        }
+    }
+
+    return pow(getProcessMapPheromones(processID, taskID), alpha);
 }
 
 double AntColony::getTaskMapPheromones(int taskID, int processID) {
@@ -278,5 +294,9 @@ void AntColony::printStartAndFinalTime() {
 void AntColony::printBestFinalTime() {
     std::cout << "Best Final Time: " << getBestFinalTime() << std::endl;
 
+}
+
+double AntColony::getDeltaPheromones(Ant &ant) {
+    return handDownPheromonesCoefficient / ant.getFinalTime();
 }
 
