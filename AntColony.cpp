@@ -27,10 +27,8 @@ AntColony::AntColony(int taskCount, int processCount, int antCount, double *tran
 }
 
 void AntColony::initMap() {
-    taskMap = new double[taskCount * processCount];
-    processMap = new double[processCount * taskCount];
-    init2DArray(taskMap, taskCount, processCount);
-    init2DArray(processMap, processCount, taskCount);
+    taskMap = new double[taskCount * taskCount];
+    init2DArray(taskMap, taskCount, taskCount);
 }
 
 void AntColony::init2DArray(double *array, int x, int y) {
@@ -53,6 +51,10 @@ void AntColony::run(int iteration) {
         intAnt();
         moveAnts();
         updatePheromones();
+        if (hasFoundBest) {
+            initMap();
+            hasFoundBest = false;
+        }
     }
 }
 
@@ -90,7 +92,6 @@ void AntColony::moveAnt(Ant &ant) {
             selectedTask = getRandTask(ant);
         }
         ant.selectTask(selectedTask);
-        ant.selectProcess(selectedTask, getRandProcess(ant));
     }
 }
 
@@ -104,46 +105,19 @@ void AntColony::updatePheromones() {
 void AntColony::updateAntPheromones(Ant &ant) {
     double deltaPheromones = getDeltaPheromones(ant);
     for (int i = 0; i < taskCount; ++i) {
-        int taskID = *(ant.getTaskSchedule() + i), processID = *(ant.getProcessMatch() + i);
-        if (i != 0) {
-            // 更新 process to task 的費洛蒙
-            setProcessMapPheromones(processID, taskID, deltaPheromones);
-        }
+        int taskID = *(ant.getTaskSchedule() + i), orderID = i;
         // 更新 task to  process 的費洛蒙
-        setTaskMapPheromones(taskID, processID, deltaPheromones);
+        setTaskMapPheromones(taskID, orderID, deltaPheromones);
     }
 }
 
 void AntColony::evaporatePheromones() {
     for (int i = 0; i < taskCount; ++i) {
-        for (int j = 0; j < processCount; ++j) {
-            *(taskMap + i * processCount + j) *= (1 - evaporatePheromonesCoefficient);
-            *(processMap + j * taskCount + i) *= (1 - evaporatePheromonesCoefficient);
-            checkProcessMapPheromones(j, i);
+        for (int j = 0; j < taskCount; ++j) {
+            *(taskMap + i * taskCount + j) *= (1 - evaporatePheromonesCoefficient);
             checkTaskMapPheromones(i, j);
         }
     }
-}
-
-int AntColony::getRandProcess(Ant &ant) {
-    double processProbability[processCount], processProbabilitySum = 0.0;
-
-    for (int i = 0; i < processCount; ++i) {
-        processProbability[i] = calculateProbability(ant.getCurrentTask(), i, ant, false);
-        processProbabilitySum += processProbability[i];
-    }
-
-    double targetPoint = getRandom(processProbabilitySum);
-
-    for (int i = 0; i < taskCount; ++i) {
-        targetPoint -= processProbability[i];
-        if (targetPoint <= 0.0) {
-            return i;
-        }
-    }
-
-    std::cout << "[ERROR] getRandProcess" << std::endl;
-    return 0;
 }
 
 int AntColony::getRandTask(Ant &ant) {
@@ -153,7 +127,7 @@ int AntColony::getRandTask(Ant &ant) {
             taskProbability[i] = 0.0;
             continue;
         }
-        taskProbability[i] = calculateProbability(i, ant.getCurrentProcess(), ant, true);
+        taskProbability[i] = calculateProbability(i, ant.getTaskScheduleIndex() + 1, ant);
         taskProbabilitySum += taskProbability[i];
     }
     double targetPoint = getRandom(taskProbabilitySum);
@@ -168,41 +142,17 @@ int AntColony::getRandTask(Ant &ant) {
     return 0;
 }
 
-double AntColony::calculateProbability(int taskID, int processID, Ant &ant, bool selectTask) {
-
-    if (selectTask) {
-        return pow(getTaskMapPheromones(taskID, processID), alpha);
-    }
-
-    if (ant.getCurrentProcess() != -1 && ant.getCurrentProcess() != processID) {
-        if (*(transDataVol + ant.getPreviousTask() * taskCount + taskID) != -1 &&
-                *(transDataVol + ant.getPreviousTask() * taskCount + taskID) != 0) {
-
-            return pow(getProcessMapPheromones(processID, taskID), alpha) -
-                   pow(1 / (*(transDataVol + ant.getPreviousTask() * taskCount + taskID) *
-                       *(transDataRate + ant.getCurrentProcess() * processCount + processID)), beta);
-        }
-    }
-
-    return pow(getProcessMapPheromones(processID, taskID), alpha);
+double AntColony::calculateProbability(int taskID, int orderID, Ant &ant) {
+     return pow(getTaskMapPheromones(taskID, orderID), alpha);
 }
 
-double AntColony::getTaskMapPheromones(int taskID, int processID) {
-    return *(taskMap + taskID * processCount + processID);
+double AntColony::getTaskMapPheromones(int taskID, int orderID) {
+    return *(taskMap + taskID * taskCount + orderID);
 }
 
-double AntColony::getProcessMapPheromones(int processID, int taskID) {
-    return *(processMap + processID * taskCount + taskID);
-}
-
-void AntColony::setTaskMapPheromones(int taskID, int processID, double newValue) {
-    *(taskMap + taskID * processCount + processID) += newValue;
-    checkTaskMapPheromones(taskID, processID);
-}
-
-void AntColony::setProcessMapPheromones(int processID, int taskID, double newValue) {
-    *(processMap + processID * taskCount + taskID) += newValue;
-    checkProcessMapPheromones(processID, taskID);
+void AntColony::setTaskMapPheromones(int taskID, int orderID, double newValue) {
+    *(taskMap + taskID * taskCount + orderID) += newValue;
+    checkTaskMapPheromones(taskID, orderID);
 }
 
 double AntColony::getRandom(double fmax) {
@@ -224,20 +174,14 @@ void AntColony::saveBestData(Ant &ant) {
         *(bestTaskSchedule + i) = ant.getTaskSchedule()[i];
         *(bestProcessMatch + i) = ant.getProcessMatch()[i];
     }
+    hasFoundBest = true;
 }
 
 void AntColony::printPheromones() {
     std::cout << "Task Map: " << std::endl;
     for (int i = 0; i < taskCount; ++i) {
-        for (int j = 0; j < processCount; ++j) {
-            std::cout << *(taskMap + i * processCount + j) << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << "Process Map: " << std::endl;
-    for (int i = 0; i < processCount; ++i) {
         for (int j = 0; j < taskCount; ++j) {
-            std::cout << *(processMap + i * taskCount + j) << " ";
+            std::cout << *(taskMap + i * taskCount + j) << " ";
         }
         std::cout << std::endl;
     }
@@ -247,21 +191,12 @@ double AntColony::getBestFinalTime() {
     return bestFinalTime;
 }
 
-void AntColony::checkTaskMapPheromones(int taskID, int processID) {
-    if (*(taskMap + taskID * processCount + processID) < MinimumPheromones) {
-        *(taskMap + taskID * processCount + processID) = MinimumPheromones;
+void AntColony::checkTaskMapPheromones(int taskID, int orderID) {
+    if (*(taskMap + taskID * taskID + orderID) < MinimumPheromones) {
+        *(taskMap + taskID * taskID + orderID) = MinimumPheromones;
     }
-    if (*(taskMap + taskID * processCount + processID) > MaximumPheromones) {
-        *(taskMap + taskID * processCount + processID) = MaximumPheromones;
-    }
-}
-
-void AntColony::checkProcessMapPheromones(int processID, int taskID) {
-    if (*(processMap + processID * taskCount + taskID) < MinimumPheromones) {
-        *(processMap + processID * taskCount + taskID) = MinimumPheromones;
-    }
-    if (*(processMap + processID * taskCount + taskID) > MaximumPheromones) {
-        *(processMap + processID * taskCount + taskID) = MaximumPheromones;
+    if (*(taskMap + taskID * taskID + orderID) > MaximumPheromones) {
+        *(taskMap + taskID * taskID + orderID) = MaximumPheromones;
     }
 }
 

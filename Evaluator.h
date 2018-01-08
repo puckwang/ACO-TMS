@@ -34,9 +34,9 @@ private:
     void printArray(double *array, int r);
 
     // 回傳該任務可開始的時間
-    double getCanStartTime(int task);
+    double getCanStartTime(int task, int process);
 
-    void insertTask(int taskId, double canStartTime, std::vector<int> *process);
+    std::vector<int>::iterator  insertTask(int taskId, double canStartTime, std::vector<int> *process);
 };
 
 #endif //ANT_TMS_EVALUATOR_H

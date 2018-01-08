@@ -20,15 +20,12 @@ class AntColony {
 private:
     int taskCount, processCount, antCount, *bestTaskSchedule, *bestProcessMatch;
     int threadCount;
-public:
-    void setThreadCount(int threadCount);
-
-private:
     double bestFinalTime = 999999999;
-    double *taskMap, *processMap; // taskMap[taskCount][processCount]
+    double *taskMap; // taskMap[taskCount][processCount]
     double *transDataVol, *transDataRate, *runCost;
     Evaluator evaluator;
     Ant *ants;
+    bool hasFoundBest = false;
 
     void initMap();
 
@@ -42,23 +39,15 @@ private:
 
     void moveAnt(Ant &ant);
 
-    int getRandProcess(Ant &ant);
-
     int getRandTask(Ant &ant);
 
-    double calculateProbability(int taskID, int processID, Ant &ant, bool selectTask);
+    double calculateProbability(int taskID, int orderID, Ant &ant);
 
-    double getTaskMapPheromones(int taskID, int processID);
+    double getTaskMapPheromones(int taskID, int orderID);
 
-    double getProcessMapPheromones(int processID, int taskID);
+    void setTaskMapPheromones(int taskID, int orderID, double newValue);
 
-    void setTaskMapPheromones(int taskID, int processID, double newValue);
-
-    void setProcessMapPheromones(int processID, int taskID, double newValue);
-
-    void checkTaskMapPheromones(int taskID, int processID);
-
-    void checkProcessMapPheromones(int processID, int taskID);
+    void checkTaskMapPheromones(int taskID, int orderID);
 
     double getRandom(double max);
 
@@ -95,6 +84,8 @@ public:
     void printBestFinalTime();
 
     double getBestFinalTime();
+
+    void setThreadCount(int threadCount);
 };
 
 #endif //ANT_TMS_ANTCOLONY_H

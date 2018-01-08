@@ -38,6 +38,8 @@ public:
 
     void setFinalTime(double finalTime);
 
+    int getTaskScheduleIndex();
+
 private:
     int *taskSchedule, taskScheduleIndex = -1; // 排程陣列
     int *processMatch; // 匹配陣列
