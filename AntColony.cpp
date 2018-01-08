@@ -17,10 +17,6 @@ AntColony::AntColony(int taskCount, int processCount, int antCount, double *tran
     this->transDataVol = transDataVol;
     this->transDataRate = transDataRate;
     this->runCost = runCost;
-    evaluator.setCount(processCount, taskCount);
-    evaluator.setTransDataVol(transDataVol);
-    evaluator.setTransDataRate(transDataRate);
-    evaluator.setRunCost(runCost);
     initMap();
     bestTaskSchedule = new int[taskCount];
     bestProcessMatch = new int[taskCount];
@@ -51,10 +47,6 @@ void AntColony::run(int iteration) {
         intAnt();
         moveAnts();
         updatePheromones();
-        if (hasFoundBest) {
-            initMap();
-            hasFoundBest = false;
-        }
     }
 }
 
@@ -68,8 +60,7 @@ void AntColony::moveAnts() {
         thread[k]->join();
     }
 
-    for (int i = 0; i < this->antCount; ++i) {
-        evaluateAnt(ants[i]);
+    for (int i = 0; i < antCount; ++i) {
         if (bestFinalTime > ants[i].getFinalTime()) {
             saveBestData(ants[i]);
         }
@@ -79,6 +70,7 @@ void AntColony::moveAnts() {
 void AntColony::moveAntsThread(int start, int end) {
     for (int i = start; i < end; ++i) {
         moveAnt(ants[i]);
+        evaluateAnt(ants[i]);
     }
 }
 
@@ -164,6 +156,11 @@ double AntColony::getRandom(double fmax) {
 }
 
 void AntColony::evaluateAnt(Ant &ant) {
+    Evaluator evaluator;
+    evaluator.setCount(processCount, taskCount);
+    evaluator.setTransDataVol(transDataVol);
+    evaluator.setTransDataRate(transDataRate);
+    evaluator.setRunCost(runCost);
     evaluator.setSsMs(ant.getTaskSchedule(), ant.getProcessMatch());
     ant.setFinalTime(evaluator.getCost());
 }
@@ -214,6 +211,11 @@ void AntColony::printScheduleAndMatch() {
 }
 
 void AntColony::printStartAndFinalTime() {
+    Evaluator evaluator;
+    evaluator.setCount(processCount, taskCount);
+    evaluator.setTransDataVol(transDataVol);
+    evaluator.setTransDataRate(transDataRate);
+    evaluator.setRunCost(runCost);
     evaluator.setSsMs(this->bestTaskSchedule, this->bestProcessMatch);
     evaluator.getCost();
     std::cout << "Start Time: " << std::endl;

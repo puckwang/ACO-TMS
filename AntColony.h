@@ -8,12 +8,12 @@
 #include "Ant.h"
 #include "Evaluator.h"
 
-#define initPheromones 0.8 // 初始費洛蒙 0.9
-#define evaporatePheromonesCoefficient 0.75 // 費洛蒙蒸發係數 0~1
+#define initPheromones 0.5 // 初始費洛蒙 0.9
+#define evaporatePheromonesCoefficient 0.8 // 費洛蒙蒸發係數 0~1
 #define handDownPheromonesCoefficient 5 // 費洛蒙遺留係數 0~1
 #define MaximumPheromones 1
 #define MinimumPheromones 0.0001
-#define alpha 1 // 費洛蒙影響力控制系數 1
+#define alpha 2 // 費洛蒙影響力控制系數 1
 #define beta 2 // 可視度影響力控制系數 1
 
 class AntColony {
@@ -23,7 +23,6 @@ private:
     double bestFinalTime = 999999999;
     double *taskMap; // taskMap[taskCount][processCount]
     double *transDataVol, *transDataRate, *runCost;
-    Evaluator evaluator;
     Ant *ants;
     bool hasFoundBest = false;
 
@@ -47,13 +46,13 @@ private:
 
     void setTaskMapPheromones(int taskID, int orderID, double newValue);
 
-    void checkTaskMapPheromones(int taskID, int orderID);
-
     double getRandom(double max);
 
     void evaluateAnt(Ant &ant);
 
     void saveBestData(Ant &ant);
+
+    void checkTaskMapPheromones(int taskID, int orderID);
 
     /**
      * 蒸發費洛蒙
