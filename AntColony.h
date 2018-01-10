@@ -14,12 +14,13 @@
 #define MaximumPheromones 1
 #define MinimumPheromones 0.0001
 #define alpha 2 // 費洛蒙影響力控制系數 1
-#define beta 2 // 可視度影響力控制系數 1
+#define beta 10 // 可視度影響力控制系數 1
 
 class AntColony {
 private:
     int taskCount, processCount, antCount, *bestTaskSchedule, *bestProcessMatch;
     int threadCount;
+    int *taskWaitCount;
     double bestFinalTime = 999999999;
     double *taskMap; // taskMap[taskCount][processCount]
     double *transDataVol, *transDataRate, *runCost;
@@ -70,7 +71,7 @@ private:
     double getDeltaPheromones(Ant &ant);
 
 public:
-    AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost);
+    AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate, double *runCost, int *taskWaitCount);
 
     void run(int iteration);
 

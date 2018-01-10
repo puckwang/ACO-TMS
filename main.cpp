@@ -66,24 +66,36 @@ int main(int argc, char *argv[]) {
     double transDataRate[pCount][pCount]; // 處理器間的傳送單位成本
     double runCost[tCount][pCount]; // 處理器執行各任務的時間
     double transDataVol[tCount][tCount];  // 處理器間傳送的資料單位量
+    int taskWaitCount[tCount];
 
     // 初始化資料
     init2DArray(*transDataRate, pCount, pCount);
     init2DArray(*runCost, tCount, pCount);
     init2DArray(*transDataVol, tCount, tCount);
+    for (int i = 0; i < tCount; ++i) {
+        taskWaitCount[i] = 0;
+    }
 
     // 匯入資料
     importData(inputFile, *transDataRate, pCount, pCount);
     importData(inputFile, *runCost, tCount, pCount);
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
+    for (int i = 0; i < tCount; ++i) {
+        for (int j = 0; j < tCount; ++j) {
+            if (transDataVol[i][j] != -1) {
+                taskWaitCount[i]++;
+            }
+        }
+    }
+
     struct timespec start, end;
     double avgTime = 0, bestCase = 99999, worstCase = 0, avgCase = 0, cases[5], sd = 0;
     for (int i = 0; i < 5; ++i) {
         clock_gettime(CLOCK_MONOTONIC, &start);
-        AntColony antColony(tCount, pCount, tCount, *transDataVol, *transDataRate, *runCost);
+        AntColony antColony(tCount, pCount, tCount, *transDataVol, *transDataRate, *runCost, taskWaitCount);
         antColony.setThreadCount(5);
-        antColony.run(300);
+        antColony.run(200);
         clock_gettime(CLOCK_MONOTONIC, &end);
         avgTime += diff(start, end);
         cases[i] = antColony.getBestFinalTime();

@@ -10,13 +10,14 @@
 #include <thread>
 
 AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate,
-                     double *runCost) {
+                     double *runCost, int *taskWaitCount) {
     this->taskCount = taskCount;
     this->processCount = processCount;
     this->antCount = antCount;
     this->transDataVol = transDataVol;
     this->transDataRate = transDataRate;
     this->runCost = runCost;
+    this->taskWaitCount = taskWaitCount;
     initMap();
     bestTaskSchedule = new int[taskCount];
     bestProcessMatch = new int[taskCount];
@@ -139,7 +140,8 @@ int AntColony::getRandTask(Ant &ant) {
 }
 
 double AntColony::calculateProbability(int taskID, int orderID, Ant &ant) {
-     return pow(getTaskMapPheromones(taskID, orderID), alpha);
+     return pow(getTaskMapPheromones(taskID, orderID), alpha) *
+             pow(1 + 0.1 * taskWaitCount[taskID], beta);
 }
 
 double AntColony::getTaskMapPheromones(int taskID, int orderID) {
