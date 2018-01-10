@@ -46,6 +46,10 @@ void AntColony::run(int iteration) {
     for (int i = 0; i < iteration; i++) {
         intAnt();
         moveAnts();
+        if (hasFoundBest) {
+            hasFoundBest = false;
+            initMap();
+        }
         updatePheromones();
     }
 }
@@ -217,7 +221,7 @@ void AntColony::printStartAndFinalTime() {
     evaluator.setTransDataRate(transDataRate);
     evaluator.setRunCost(runCost);
     evaluator.setSsMs(this->bestTaskSchedule, this->bestProcessMatch);
-    evaluator.getCost();
+    this->bestFinalTime = evaluator.getCost();
     std::cout << "Start Time: " << std::endl;
     evaluator.printSt();
     std::cout << "Final Time: " << std::endl;

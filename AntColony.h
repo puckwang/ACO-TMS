@@ -8,7 +8,7 @@
 #include "Ant.h"
 #include "Evaluator.h"
 
-#define initPheromones 0.5 // 初始費洛蒙 0.9
+#define initPheromones 0.9 // 初始費洛蒙 0.9
 #define evaporatePheromonesCoefficient 0.8 // 費洛蒙蒸發係數 0~1
 #define handDownPheromonesCoefficient 5 // 費洛蒙遺留係數 0~1
 #define MaximumPheromones 1
