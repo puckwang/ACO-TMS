@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include "AntColony.h"
 #define numMax -1
 using namespace std;
@@ -77,18 +78,35 @@ int main(int argc, char *argv[]) {
     import2DData(inputFile, *transDataVol, eCount, tCount);
 
     struct timespec start, end;
+    double avgTime = 0, bestCase = 99999, worstCase = 0, avgCase = 0, cases[5], sd = 0;
+    for (int i = 0; i < 5; ++i) {
+        clock_gettime(CLOCK_MONOTONIC, &start);
+        AntColony antColony(tCount, pCount, tCount, *transDataVol, *transDataRate, *runCost);
+        antColony.setThreadCount(5);
+        antColony.run(300);
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        avgTime += diff(start, end);
+        cases[i] = antColony.getBestFinalTime();
+        avgCase += cases[i];
+        if (cases[i] < bestCase) {
+            bestCase = cases[i];
+        }
+        if (cases[i] > worstCase) {
+            worstCase = cases[i];
+        }
+    }
+    avgCase /= 5;
+    avgTime /= 5;
+    for (int j = 0; j < 5; ++j) {
+        sd += pow(cases[j]-avgCase, 2);
+    }
+    sd = sqrt(sd / 5);
 
-    clock_gettime(CLOCK_MONOTONIC, &start);
-    AntColony antColony(tCount, pCount, 40, *transDataVol, *transDataRate, *runCost);
-    antColony.setThreadCount(4);
-    antColony.run(200);
-    clock_gettime(CLOCK_MONOTONIC, &end);
-
-    antColony.printScheduleAndMatch();
-    antColony.printStartAndFinalTime();
-    antColony.printBestFinalTime();
-
-    cout << "Run time: " << diff(start, end) << endl;
+    cout << "Best: " << bestCase << endl;
+    cout << "Worst: " << worstCase << endl;
+    cout << "Avg. : " << avgCase << endl;
+    cout << "SD: " << sd << endl;
+    cout << "Avg. time: " << avgTime << endl;
     inputFile.close();
     outputFile.close();
     return 0;

@@ -36,17 +36,8 @@ void Ant::selectTask(int taskId) {
     doneTask[taskId] = 1;
 }
 
-void Ant::selectProcess(int taskId, int processId) {
-    processMatch[taskId] = processId;
-    currentProcess = processId;
-}
-
-int Ant::getCurrentTask() {
-    return currentTask;
-}
-
-int Ant::getCurrentProcess() {
-    return currentProcess;
+int Ant::getTaskScheduleIndex() {
+    return taskScheduleIndex;
 }
 
 bool Ant::canRunTask(int taskID) {
@@ -101,8 +92,4 @@ double Ant::getFinalTime() {
 
 void Ant::setFinalTime(double finalTime) {
     this->finalTime = finalTime;
-}
-
-int Ant::getPreviousTask() {
-    return taskScheduleIndex > 0 ? taskSchedule[taskScheduleIndex-1] : -1;
 }
