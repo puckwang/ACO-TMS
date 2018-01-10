@@ -1,2 +1,2 @@
 # Ant-TMS
-a Ant System for Task Matching and Scheduling
+a ant colony optimization for Task Matching and Scheduling
