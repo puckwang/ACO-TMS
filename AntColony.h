@@ -7,6 +7,7 @@
 
 #include "Ant.h"
 #include "Evaluator.h"
+#include <mutex>
 
 #define initPheromones 0.9 // 初始費洛蒙  0~1
 #define evaporatePheromonesCoefficient 0.5 // 費洛蒙蒸發係數 0~1
