@@ -8,6 +8,7 @@
 #include <iostream>
 #include "AntColony.h"
 #include <thread>
+#include <mutex>
 
 AntColony::AntColony(int taskCount, int processCount, int antCount, double *transDataVol, double *transDataRate,
                      double *runCost, int *taskWaitCount) {
@@ -50,8 +51,9 @@ void AntColony::run(int iteration) {
         if (hasFoundBest) {
             hasFoundBest = false;
             initMap();
+        } else {
+            updatePheromones();
         }
-        updatePheromones();
     }
 }
 
@@ -76,6 +78,7 @@ void AntColony::moveAntsThread(int start, int end) {
     for (int i = start; i < end; ++i) {
         moveAnt(ants[i]);
         evaluateAnt(ants[i]);
+        updateAntPheromones(ants[i]);
     }
 }
 
@@ -92,6 +95,9 @@ void AntColony::moveAnt(Ant &ant) {
     }
 }
 
+/**
+ * 更新全部螞蟻費洛蒙
+ */
 void AntColony::updatePheromones() {
     evaporatePheromones();
     for (int i = 0; i < antCount; ++i) {
@@ -99,7 +105,11 @@ void AntColony::updatePheromones() {
     }
 }
 
+/**
+ * 更新單隻螞蟻費洛蒙
+ */
 void AntColony::updateAntPheromones(Ant &ant) {
+    std::lock_guard<std::mutex> mLock( gMutex );
     double deltaPheromones = getDeltaPheromones(ant);
     for (int i = 0; i < taskCount; ++i) {
         int taskID = *(ant.getTaskSchedule() + i), orderID = i;
@@ -108,6 +118,9 @@ void AntColony::updateAntPheromones(Ant &ant) {
     }
 }
 
+/**
+ * 蒸發費洛蒙
+ */
 void AntColony::evaporatePheromones() {
     for (int i = 0; i < taskCount; ++i) {
         for (int j = 0; j < taskCount; ++j) {
