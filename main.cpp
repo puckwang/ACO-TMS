@@ -93,7 +93,7 @@ int main(int argc, char *argv[]) {
     double avgTime = 0, bestCase = 99999, worstCase = 0, avgCase = 0, cases[5], sd = 0;
     for (int i = 0; i < 5; ++i) {
         clock_gettime(CLOCK_MONOTONIC, &start);
-        AntColony antColony(tCount, pCount, tCount, *transDataVol, *transDataRate, *runCost, taskWaitCount);
+        AntColony antColony(tCount, pCount, 10, *transDataVol, *transDataRate, *runCost, taskWaitCount);
         antColony.setThreadCount(5);
         antColony.run(200);
         clock_gettime(CLOCK_MONOTONIC, &end);
