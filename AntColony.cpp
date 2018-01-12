@@ -48,11 +48,21 @@ void AntColony::run(int iteration) {
     for (int i = 0; i < iteration; i++) {
         intAnt();
         moveAnts();
+        double deltaPheromones = handDownPheromonesCoefficient / bestFinalTime;
         if (hasFoundBest) {
             hasFoundBest = false;
             initMap();
+            for (int i = 0; i < taskCount; ++i) {
+                int taskID = bestTaskSchedule[i], orderID = i;
+                setTaskMapPheromones(taskID, orderID, deltaPheromones);
+            }
         } else {
+            evaporatePheromones();
             updatePheromones();
+        }
+
+        for (int j = 0; j < taskCount; ++j) {
+            setTaskMapPheromones(getRandom(taskCount), j, deltaPheromones);
         }
     }
 }
@@ -78,7 +88,7 @@ void AntColony::moveAntsThread(int start, int end) {
     for (int i = start; i < end; ++i) {
         moveAnt(ants[i]);
         evaluateAnt(ants[i]);
-        updateAntPheromones(ants[i]);
+        updateAntPheromones(ants[i], -1);
     }
 }
 
@@ -99,7 +109,6 @@ void AntColony::moveAnt(Ant &ant) {
  * 更新全部螞蟻費洛蒙
  */
 void AntColony::updatePheromones() {
-    evaporatePheromones();
     for (int i = 0; i < antCount; ++i) {
         updateAntPheromones(ants[i]);
     }
@@ -108,9 +117,9 @@ void AntColony::updatePheromones() {
 /**
  * 更新單隻螞蟻費洛蒙
  */
-void AntColony::updateAntPheromones(Ant &ant) {
+void AntColony::updateAntPheromones(Ant &ant, int weight) {
     std::lock_guard<std::mutex> mLock( gMutex );
-    double deltaPheromones = getDeltaPheromones(ant);
+    double deltaPheromones = weight * getDeltaPheromones(ant);
     for (int i = 0; i < taskCount; ++i) {
         int taskID = *(ant.getTaskSchedule() + i), orderID = i;
         // 更新 task to  process 的費洛蒙
@@ -170,6 +179,14 @@ double AntColony::getRandom(double fmax) {
     std::random_device rd;
     std::default_random_engine gen = std::default_random_engine(rd());
     std::uniform_real_distribution<double> dis(0.0, fmax);
+
+    return dis(gen);
+}
+
+int AntColony::getRandom(int imax) {
+    std::random_device rd;
+    std::default_random_engine gen = std::default_random_engine(rd());
+    std::uniform_int_distribution<int> dis(0, imax);
 
     return dis(gen);
 }

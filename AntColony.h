@@ -9,11 +9,11 @@
 #include "Evaluator.h"
 #include <mutex>
 
-#define initPheromones 0.9 // 初始費洛蒙  0~1
-#define evaporatePheromonesCoefficient 0.5 // 費洛蒙蒸發係數 0~1
-#define handDownPheromonesCoefficient 5 // 費洛蒙遺留係數
-#define MaximumPheromones 1
-#define MinimumPheromones 0.001
+#define initPheromones 0.5 // 初始費洛蒙  0~1
+#define evaporatePheromonesCoefficient 0.8 // 費洛蒙蒸發係數 0~1
+#define handDownPheromonesCoefficient 2 // 費洛蒙遺留係數
+#define MaximumPheromones 2
+#define MinimumPheromones 0.01
 #define alpha 2 // 費洛蒙影響力控制系數
 #define beta 4 // 可視度影響力控制系數
 
@@ -51,6 +51,8 @@ private:
 
     double getRandom(double max);
 
+    int getRandom(int imax);
+
     void evaluateAnt(Ant &ant);
 
     void saveBestData(Ant &ant);
@@ -66,7 +68,7 @@ private:
      * 更新單一隻螞蟻路徑的費洛蒙
      * @param ant
      */
-    void updateAntPheromones(Ant &ant);
+    void updateAntPheromones(Ant &ant, int weight = 1);
 
     void moveAntsThread(int start, int end);
 
