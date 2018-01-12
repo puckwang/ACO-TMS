@@ -208,11 +208,11 @@ double AntColony::getBestFinalTime() {
 }
 
 void AntColony::checkTaskMapPheromones(int taskID, int orderID) {
-    if (*(taskMap + taskID * taskID + orderID) < MinimumPheromones) {
-        *(taskMap + taskID * taskID + orderID) = MinimumPheromones;
+    if (*(taskMap + taskID * taskCount + orderID) < MinimumPheromones) {
+        *(taskMap + taskID * taskCount + orderID) = MinimumPheromones;
     }
-    if (*(taskMap + taskID * taskID + orderID) > MaximumPheromones) {
-        *(taskMap + taskID * taskID + orderID) = MaximumPheromones;
+    if (*(taskMap + taskID * taskCount + orderID) > MaximumPheromones) {
+        *(taskMap + taskID * taskCount + orderID) = MaximumPheromones;
     }
 }
 
